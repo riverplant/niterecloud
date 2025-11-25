@@ -1,0 +1,22 @@
+定義頂級元素:
+name: 名字
+
+
+services: 服務
+
+
+networks: 網絡
+
+
+volumes: 卷
+
+
+configs: 配置
+
+
+secrets: 密鑰
+
+
+docker compose -f compose.yaml down --rmi(刪除鏡像，需要指定鏡像名稱，或者all) -v(刪除卷，會導致數據丟失)
+
+docker compose -f compose.yaml down --rmi all -v

@@ -1,0 +1,37 @@
+# Maven 輸出
+target/
+**/target/
+
+# IntelliJ IDEA
+.idea/
+*.iml
+*.ipr
+*.iws
+
+# Eclipse（如果不用其實無所謂）
+.apt_generated
+.classpath
+.factorypath
+.project
+.settings/
+.springBeans
+.sts4-cache
+
+# NetBeans
+/nbproject/private/
+/nbbuild/
+/dist/
+/nbdist/
+/.nb-gradle/
+build/
+**/build/
+
+# VS Code
+.vscode/
+
+# Docker 裡的 WordPress 原始碼（只保留自己的 docker 設定）
+docker/
+
+# Mac / Windows 系統檔
+.DS_Store
+Thumbs.db

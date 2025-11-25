@@ -1,0 +1,40 @@
+name: myblog
+services:
+  mysql:
+    container_name: mysql
+    image: mysql:8.0
+    ports:
+      - "3306:3306"
+    environment:
+      - MYSQL_ROOT_PASSWORD=123456
+      - MYSQL_DATABASE=wordpress
+    volumes:
+      - ./docker/app/mysql/myconf:/etc/mysql/conf.d
+      - mysql-data:/var/lib/mysql
+    restart: always
+    networks:
+      - blog
+
+  wordpress:
+    container_name: wordpress
+    image: wordpress:latest
+    ports:
+      - "3000:80"
+    environment:
+      WORDPRESS_DB_HOST: mysql
+      WORDPRESS_DB_USER: root
+      WORDPRESS_DB_PASSWORD: 123456
+      WORDPRESS_DB_NAME: wordpress
+    volumes:
+      - ./docker/app/wordpress:/var/www/html
+    restart: always
+    networks:
+      - blog
+    depends_on:
+      - mysql
+
+
+networks:
+  blog:
+volumes:
+  mysql-data:

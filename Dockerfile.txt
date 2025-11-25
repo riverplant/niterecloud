@@ -1,0 +1,39 @@
+Dockerfile: 將自己的jar包製作自己的鏡像
+Dockerfile 就是一個純文字文件，裡面寫「怎麼從 0 做出你的 Docker 映像檔」的步驟。
+
+一般命名就叫：Dockerfile（沒副檔名），放在專案根目錄。
+
+之後在這個目錄執行：
+docker build -t myapp:latest .
+
+
+FROM: 指定鏡像基礎環境
+
+RUN:  運行自定義命令
+
+CMD: 容器啓動命令或者參數
+
+LABEL: 自定義標簽
+
+EXPOSE: 指定暴露端口
+
+ENV: 環境變量
+
+
+ADD: 添加文件到鏡像
+
+COPY: 複製文件到鏡像
+
+ENTRYPOINT: 容器固定啓動命令
+
+
+VOLUME: 數據卷
+
+
+USER: 指定用戶和用戶組
+
+
+WORKDIR: 指定默認工作目錄
+
+
+ARG: 指定構建參數

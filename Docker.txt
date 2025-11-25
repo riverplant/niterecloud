@@ -1,0 +1,246 @@
+啓動一個ngix, 將它的首頁改爲自己的頁面，發佈出去
+
+1. 下載ngix軟件鏡像
+docker search 檢索
+
+docker pull  ：  鏡像名:標簽版本
+
+docker images: 查看鏡像列表
+
+docker rmi: 刪除
+
+
+2. 啓動容器
+
+docker run : 運行
+docker ps: 查看
+docker stop
+docker start
+docker restart
+docker stats: 看到容器狀態
+docker logs
+docker exec: 進入docker!!!!!!!!!!!!!!!
+docker rm
+
+-p 外都端口:内部端口
+docker run -d --name mynginx -p 80:80 nginx
+
+
+3.修改頁面
+通過docker exec進入docker容器中，修改在容器的/usr/share/nginx/html
+ docker exec -it mynginx /bin/bash
+ -it: 互動
+mynginx：容器名稱
+/bin/bash： 使用bash的方式互動
+
+root@a19060816776:/usr/share/nginx/html# ls
+50x.html  index.html
+root@a19060816776:/usr/share/nginx/html# echo "<h1>Hello,Docker.</h1>" > index.html
+root@a19060816776:/usr/share/nginx/html# cat index.html
+<h1>Hello,Docker.</h1>
+root@a19060816776:/usr/share/nginx/html# exit 推出容器内部
+
+
+
+4.保存鏡像
+docker commit 提交: 可以將容器打包成新的鏡像
+docker commit -m "updated index.html" mynginx  mynginx:v1.0
+
+docker save
+docker save -o mynginx.tar mynginx:v1.0 將鏡像保存成一個文件
+
+
+docker load
+加載別人給你的鏡像文件：
+docker load -i mynginx.tar
+
+5.分享社區
+docker login
+
+docker tag
+docker tag mynginx:v1.0 riverplant/mynginx:v1.0
+
+docker push
+docker push riverplant/mynginx:v1.0
+
+------------------------------存儲--------------------------------------------------------------------
+docker rm -f $(docker ps -aq)     將docker ps -aq命令返回的所有容器id都刪除
+
+目錄挂載: -v
+docker run -d -p 80:80 -v 'D:\workspace\2025\docker\app\nginx:/usr/share/nginx/html' --name app01 nginx
+
+docker run -d -p 80:80 `-v "D:\workspace\2025\docker\app\nginx:/usr/share/nginx/html" ` --name app01 nginx
+
+卷映射： 將容器内容的文件同步到外部
+-v ngconf:/ect/nginx
+
+ngconf: 卷名
+在 Linux 上，這個卷的實體資料一般會在 /var/lib/docker/volumes/... 裡。
+在 Windows + Docker Desktop 裡，容器其實是跑在一個隱藏的 Linux VM 裡，這個 VM 的 /var/lib/docker/volumes 不會直接映射成 C:\ 或 D:\ 的某個資料夾
+用一個臨時容器掛上Docker Desktop 的內部 Linux 環境
+docker run --rm -it -v ngconf:/data alpine sh : 啓動一個alpine的Linux容器，將挂載的ngconf卷關在在/data目錄下，同時使用-it來進行sh溝通
+--rm保證了推出的時候就刪除這個容器
+
+ docker volume inspect ngconf: 查看ngconf卷的位置
+
+ --------------------------------------------【網絡!!!!!!!!!!非常重要】---------------------------
+創建自定義網絡，將容器的ip加入到這個自定義網絡，以後就可以直接通過容器名進行訪問！！！！！！！！！！！！！！
+
+1. 先創建自定義網絡
+docker network create mynet
+
+2. 創建容器:
+docker run -d -p 88:80 --name app1 --network mynet nginx    172.18.0.2
+
+docker run -d -p 99:80 --name app2 --network mynet nginx    172.18.0.3
+
+docker exec -it app1 bash
+curl http://app2:80
+
+
+----------------------Redis主從同步集群-----------------------------------------------
+redis01: master: 實現寫請求
+redis02: slave 需要同步主機的數據，實現讀請求
+實現讀寫分離
+
+1. 將兩個容器放入同一個網絡
+
+2. master的6379映射到外部6379， slave的6379映射到外部6380
+
+3.將數據挂載以確保數據不會丟失 /app/rd1:/bitnami/redis/data
+
+4. 設置主機：REDIS_REPLICATION_MODE=master
+           REDIS_PASSWORD=123456
+
+5. 設置從機：REDIS_REPLICATION_MODE=slave
+           REDIS_MASTER_HOST=redis01
+           REDIS_MASTER_PORT_NUMBER=6379
+           REDIS_MASTER_PASSWORD=123456
+           REDIS_PASSWORD=123456
+
+docker run -d -p 6379:6379 `
+-v D:\workspace\2025\docker\app\rd1:/bitnami/redis/data `
+-e REDIS_REPLICATION_MODE=master   `
+-e REDIS_PASSWORD=123456 `
+--network mynet --name redis01 `
+bitnami/redis
+
+
+docker run -d -p 6380:6379 `
+-v D:\workspace\2025\docker\app\rd2:/bitnami/redis/data `
+-e REDIS_REPLICATION_MODE=slave   `
+-e REDIS_MASTER_HOST=redis01   `
+-e REDIS_MASTER_PORT_NUMBER=6379   `
+-e REDIS_MASTER_PASSWORD=123456 `
+-e REDIS_PASSWORD=123456 `
+--network mynet --name redis02 `
+bitnami/redis
+
+
+停掉並刪除現在的 container
+
+docker stop redis01 redis02
+docker rm redis01 redis02
+
+
+清空本地資料夾（至少清空 slave 的 rd2）
+Remove-Item D:\workspace\2025\docker\app\rd1\* -Recurse -Force
+Remove-Item D:\workspace\2025\docker\app\rd2\* -Recurse -Force
+
+（推薦）改用 Docker volume，而不是 Windows 目錄掛載
+docker volume create redis01-data
+docker volume create redis02-data
+
+docker run -d -p 6379:6379 `
+  -v redis01-data:/bitnami/redis/data `
+  -e REDIS_REPLICATION_MODE=master `
+  -e REDIS_PASSWORD=123456 `
+  --network mynet --name redis01 `
+  bitnami/redis
+
+docker run -d -p 6380:6379 `
+  -v redis02-data:/bitnami/redis/data `
+  -e REDIS_REPLICATION_MODE=slave `
+  -e REDIS_MASTER_HOST=redis01 `
+  -e REDIS_MASTER_PORT_NUMBER=6379 `
+  -e REDIS_MASTER_PASSWORD=123456 `
+  -e REDIS_PASSWORD=123456 `
+  --network mynet --name redis02 `
+  bitnami/redis
+
+啟動後檢查 replication 狀態
+docker exec -it redis01 redis-cli -a 123456 INFO replication
+
+在 slave：
+docker exec -it redis02 redis-cli -a 123456 INFO replication
+
+
+測試資料是否同步：
+# master 上
+docker exec -it redis01 redis-cli -a 123456 SET hello "world"
+
+# slave 上
+docker exec -it redis02 redis-cli -a 123456 GET hello
+
+關注點： 配置 | 存儲 | 端口
+
+PS D:\workspace\2025\docker\app\nginx> docker run -d -p 3306:3306 `
+>> -v D:\workspace\2025\docker\app\mysql\myconf:/etc/mysql/conf.d `
+>> -v D:\workspace\2025\docker\app\mysql\mydata:/var/lib/mysql `
+>> -e MYSQL_ROOT_PASSWORD=123456 `
+    --restart always --name mysql ` (開機自動啓動)
+    --network blog `
+>> mysql:8.0.44-debian
+
+-----------------------Docker Compose----------------------------------------------------------------
+compose.yaml: 所有容器批量啓動
+docker compose up -d   上綫
+docker compose down
+docker compose start x1 x2......   啓動
+docker compose stop
+
+擴容: docker compose x1 3 啓動3個實例
+
+
+使用wordpress創建一個blog, 將數據保存到mysql中
+Docker方法：
+1. 創建網絡: blog
+docker network create blog
+docker network ls
+
+2. 刪除目前所有的:  docker rm -f $(docker ps -aq)
+
+3. 創建容器 mysql
+PS D:\workspace\2025\docker\app\nginx> docker run -d -p 3306:3306 `
+>> -e MYSQL_ROOT_PASSWORD=123456 `
+>> -e MYSQL_DATABASE=wordpress `
+>> -v D:\workspace\2025\docker\app\mysql\mysql-data:/var/lib/mysql `
+>> -v D:\workspace\2025\docker\app\mysql\myconf:/etc/mysql/conf.d `
+>> --restart always --name mysql `
+>> --network blog `
+>> mysql:8.0
+
+
+4. 創建容器:wordpress
+PS D:\workspace\2025\docker\app\nginx> docker run -d -p 8080:80 `
+>> -e WORDPRESS_DB_HOST=mysql `
+>> -e WORDPRESS_DB_USER=root `
+>> -e WORDPRESS_DB_PASSWORD=123456 `
+>> -e WORDPRESS_DB_NAME=wordpress `
+>> -v D:\workspace\2025\docker\app\wordpress:/var/www/html `
+>> --restart always --name wordpress-app `
+>> --network blog `
+>> wordpress:latest
+
+
+通過compose.yml來創建!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+
+
+
+
+
+
+
+
+
