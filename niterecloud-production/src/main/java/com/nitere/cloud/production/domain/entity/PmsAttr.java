@@ -1,12 +1,15 @@
 package com.nitere.cloud.production.domain.entity;
 
+import com.nitere.cloud.commons.domain.DomainImpl;
 import jakarta.persistence.*;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 @Data
+@EqualsAndHashCode(callSuper = false)
 @Entity
 @Table(name = "pms_attr")
-public class PmsAttr {
+public class PmsAttr extends DomainImpl {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

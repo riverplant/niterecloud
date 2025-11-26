@@ -11,5 +11,12 @@
 
     <artifactId>niterecloud-production</artifactId>
 
+    <dependencies>
+        <dependency>
+            <groupId>com.nitere.cloud</groupId>
+            <artifactId>niterecloud-commons</artifactId>
+            <version>1.0.0</version>
+        </dependency>
+    </dependencies>
 
 </project>

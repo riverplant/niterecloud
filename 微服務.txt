@@ -1,0 +1,10 @@
+Consul：服務注冊和發現 + 配置管理
+
+loadBalancer： 負載均衡
+OpenFeign： 服務調用
+
+Circuit Breaker：服務熔斷和降級
+
+Micrometer Tracing: 服務鏈路追蹤
+
+Gateway: 服務網關

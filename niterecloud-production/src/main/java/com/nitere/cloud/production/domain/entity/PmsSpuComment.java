@@ -1,14 +1,17 @@
 package com.nitere.cloud.production.domain.entity;
 
+import com.nitere.cloud.commons.domain.DomainImpl;
 import jakarta.persistence.*;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 import java.time.LocalDateTime;
 
 @Data
+@EqualsAndHashCode(callSuper = false)
 @Entity
 @Table(name = "pms_spu_comment")
-public class PmsSpuComment {
+public class PmsSpuComment extends DomainImpl {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -31,9 +34,6 @@ public class PmsSpuComment {
 
     @Column(name = "member_ip", length = 64)
     private String memberIp;
-
-    @Column(name = "create_time")
-    private LocalDateTime createTime;
 
     @Column(name = "show_status")
     private Integer showStatus;

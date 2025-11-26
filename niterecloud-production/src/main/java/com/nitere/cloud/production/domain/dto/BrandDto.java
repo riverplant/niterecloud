@@ -5,6 +5,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.Date;
+
 @Data
 @Builder
 @NoArgsConstructor
@@ -18,4 +20,8 @@ public class BrandDto {
     private Integer status;    // 對應 showStatus
     private String firstLetter;
     private Integer sort;
+    private String creator;
+    private String updator;
+    private String updateTime;
+    private String createTime;
 }
