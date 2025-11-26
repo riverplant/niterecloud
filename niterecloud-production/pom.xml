@@ -11,14 +11,5 @@
 
     <artifactId>niterecloud-production</artifactId>
 
-    <dependencies>
-        <!-- Web 功能（如有需要） -->
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-web</artifactId>
-        </dependency>
-
-        <!-- 其他這個模組專用的依賴 -->
-    </dependencies>
 
 </project>
