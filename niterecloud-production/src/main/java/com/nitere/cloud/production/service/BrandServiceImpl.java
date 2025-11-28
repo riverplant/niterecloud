@@ -1,5 +1,6 @@
 package com.nitere.cloud.production.service;
 
+import com.nitere.cloud.commons.domain.enums.exception.BrandNotFoundException;
 import com.nitere.cloud.production.domain.dto.BrandDto;
 import com.nitere.cloud.production.domain.entity.PmsBrand;
 import com.nitere.cloud.production.domain.mapper.BrandMapper;
@@ -46,7 +47,7 @@ public class BrandServiceImpl implements BrandService {
     @Override
     public BrandDto update(Long id, BrandDto dto) {
         PmsBrand entity = brandRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("品牌不存在，id=" + id));
+                .orElseThrow(() -> new BrandNotFoundException(id));
 
         // 這裡我們手動把 DTO 的值塞回 entity（避免改到主鍵）
         entity.setName(dto.getName());
@@ -63,14 +64,14 @@ public class BrandServiceImpl implements BrandService {
     @Override
     public BrandDto getById(Long id) {
         PmsBrand brand = brandRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("品牌不存在，id=" + id));
+                .orElseThrow(() -> new BrandNotFoundException(id));
         return brandMapper.toDto(brand);
     }
 
     @Override
     public void delete(Long id) {
         if (!brandRepository.existsById(id)) {
-            throw new IllegalArgumentException("品牌不存在，id=" + id);
+            throw new BrandNotFoundException(id);
         }
         brandRepository.deleteById(id);
     }

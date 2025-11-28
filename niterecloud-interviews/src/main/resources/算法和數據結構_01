@@ -1,0 +1,66 @@
+1. 字符串查找： 暴力算法
+  public static int StringSearch(String text, String pattern) {
+
+        if (StringUtils.isBlank(pattern))
+            return 0;
+        if (text == null || text.length() < pattern.length())
+            return -1;
+
+        int n = text.length();
+        int m = pattern.length();
+
+        for (int i = 0; i <= n - m; i++) {
+            int j = 0;
+            while (j < m && text.charAt(i + j) == pattern.charAt(j)) {
+                j++;
+            }
+            if (j == m) //查找到了
+                return i;
+        }
+
+        return -1;
+    }
+2. 排序： 選擇排序
+ public static void selectSort(int[] arr) {
+        int n = arr.length;
+        for (int i = 0; i < n - 1; i++) {
+            int minIndex = i;
+            for (int j = i+1; j < arr.length; j++) {
+                if(arr[j] < arr[minIndex])
+                    minIndex = j;
+            }
+            if (minIndex != i) {
+                int temp = arr[i];
+                arr[i] = arr[minIndex];
+                arr[minIndex] = temp;
+            }
+        }
+
+        System.out.print(Arrays.toString(arr));
+
+    }
+
+
+3. 求N的階層
+
+  public static int StringSearch(String text, String pattern) {
+
+        if (StringUtils.isBlank(pattern))
+            return 0;
+        if (text == null || text.length() < pattern.length())
+            return -1;
+
+        int n = text.length();
+        int m = pattern.length();
+
+        for (int i = 0; i <= n - m; i++) {
+            int j = 0;
+            while (j < m && text.charAt(i + j) == pattern.charAt(j)) {
+                j++;
+            }
+            if (j == m) //查找到了
+                return i;
+        }
+
+        return -1;
+    }

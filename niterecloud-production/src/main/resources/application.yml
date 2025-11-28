@@ -3,7 +3,15 @@ server:
 
 spring:
   application:
-    name: order
+    name: nitere-cloud-production
+
+  cloud:
+    consul:
+      host: localhost
+      port: 8500
+      discovery:
+        service-name: ${spring.application.name}
+
 
   datasource:
     url: jdbc:postgresql://localhost:5432/niterecloud-product
@@ -33,13 +41,6 @@ spring:
     multipart:
       max-file-size: 50MB
       max-request-size: 50MB
-
-  cloud:
-    consul:
-      config:
-        enabled: false
-      discovery:
-        enabled: false
 
   rabbitmq:
     host: localhost

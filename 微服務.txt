@@ -1,4 +1,37 @@
 Consul：服務注冊和發現 + 配置管理
+https://developer.hashicorp.com/consul/docs
+https://spring.io/projects/spring-cloud-consul
+
+啓動: .\consul agent -dev
+
+訪問: http://localhost:8500/ui/dc1/services
+
+@Configuration
+public class RestTemplateConfig {
+
+    @Bean
+    @LoadBalanced
+    public RestTemplate restTemplate() {
+        return new RestTemplate();
+    }
+}
+
+因爲通過Consul去訪問微服務默認是支持負載的，所以必須在RestTemplate的Bean上添加@LoadBalanced ！！！！！！！！！！！！！！
+
+
+配置管理:
+       <!-- SpringCoud consul config-->
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-starter-consul-config</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-starter-bootstrap</artifactId>
+        </dependency>
+
+----------------------------------------------------------------------------------------------------------------------------------------
 
 loadBalancer： 負載均衡
 OpenFeign： 服務調用
