@@ -31,6 +31,15 @@ public class RestTemplateConfig {
             <artifactId>spring-cloud-starter-bootstrap</artifactId>
         </dependency>
 
+
+#application.yml使用戶級別的資源配置項
+#bootstrap.yml 是系統級別的，優先級別更高,比application.yml先加載
+
+Spring Cloud 會先創建要給Bootstrap Context, 作爲Spring應用的 Application Context的父上下文。
+初始化的時候，Bootstrap Context負責從外部源加載配置屬性(例如Consul中的全局配置!!!!!)，并且解析配置。這兩個上下文共享一個外部獲得的Environment
+
+
+
 ----------------------------------------------------------------------------------------------------------------------------------------
 
 loadBalancer： 負載均衡

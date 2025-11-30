@@ -3,7 +3,7 @@ server:
 
 spring:
   application:
-    name: order
+    name: nitere-cloud-coupon
 
   datasource:
     url: jdbc:postgresql://localhost:5432/niterecloud-coupon
@@ -33,13 +33,6 @@ spring:
     multipart:
       max-file-size: 50MB
       max-request-size: 50MB
-
-  cloud:
-    consul:
-      config:
-        enabled: false
-      discovery:
-        enabled: false
 
   rabbitmq:
     host: localhost

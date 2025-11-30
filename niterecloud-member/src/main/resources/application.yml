@@ -3,7 +3,7 @@ server:
 
 spring:
   application:
-    name: order
+    name: nitere-cloud-member
 
   datasource:
     url: jdbc:postgresql://localhost:5432/niterecloud-member
@@ -34,12 +34,6 @@ spring:
       max-file-size: 50MB
       max-request-size: 50MB
 
-  cloud:
-    consul:
-      config:
-        enabled: false
-      discovery:
-        enabled: false
 
   rabbitmq:
     host: localhost
