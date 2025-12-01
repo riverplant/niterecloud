@@ -41,10 +41,64 @@ Spring Cloud 會先創建要給Bootstrap Context, 作爲Spring應用的 Applicat
 
 在主啓動類上添加: @RefreshScope 實現Consul中更新后，應用中立刻自動更新
 
-----------------------------------------------------------------------------------------------------------------------------------------
+Consul數據持久化:
+    入駐windows後臺服務，儅windows啓動，就會自動啓動consul
+
+    @echo.服務啟動......
+    @echo off
+    @sc create Consul binpath= "D:\consul\consul.exe agent -server -ui -bind=127.0.0.1 -client=0.0.0.0 -bootstrap-expect 1 -data-dir \"D:\consul\mydata\""
+    @sc config Consul start= AUTO
+    @net start Consul
+    @echo.Consul start is OK......success
+    @pause
+
+
+
+用Docker來啓動!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+docker volume create consul-data  建一個 Docker 自己管理的 volume（用來持久化）
+docker rm -f consul-dev
+docker run -d --name consul-dev -p 8500:8500 -p 8600:8600/udp -v consul-data:/consul/data hashicorp/consul:1.22 agent -server -bootstrap-expect=1 -ui -client="0.0.0.0" -data-dir=/consul/data
+
+
+使用DiscoveryClient來獲得Consul上所有的注冊服務實例
+
+
+
+
+
+--------------------------------------------微服務之間的調用--------------------------------------------------------------------------------------------
 
 loadBalancer： 負載均衡
+
+@Configuration
+public class RestTemplateConfig {
+
+    @Bean
+    @LoadBalanced
+    public RestTemplate restTemplate() {
+        return new RestTemplate();
+    }
+}
+
+
+
+
+
+
+
+
+
+
 OpenFeign： 服務調用
+
+
+
+
+
+
+
+----------------------------------------------------------------------------------------------------------------------------------
 
 Circuit Breaker：服務熔斷和降級
 

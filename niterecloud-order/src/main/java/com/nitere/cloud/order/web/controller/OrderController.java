@@ -7,6 +7,8 @@ import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cloud.client.ServiceInstance;
+import org.springframework.cloud.client.discovery.DiscoveryClient;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
@@ -15,6 +17,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -25,6 +28,7 @@ public class OrderController {
 
     public static final String productionSrv_URL = "http://nitere-cloud-production";
     private final RestTemplate restTemplate;
+    private final DiscoveryClient discoveryClient;
 
     @Value("${server.port}")
     private String port;
@@ -66,4 +70,33 @@ public class OrderController {
         return ResultData.success(reslut);
     }
 
+    @GetMapping(value = "/brand/consul/get/info")
+    public ResultData<Map<String, String>> getProductionInfoByConsul() {
+        var exchange =
+                restTemplate.exchange(
+                        productionSrv_URL + "/brand/consul/get/info",
+                        HttpMethod.GET,
+                        HttpEntity.EMPTY,
+                        new ParameterizedTypeReference<ResultData<Map<String, String>>>() {}
+                );
+        return exchange.getBody();
+
+    }
+
+
+    @GetMapping(value = "/consul/discovery")
+    public ResultData<Map<String, String>> discovery() {
+        List<String> services = discoveryClient.getServices();
+        services.forEach(System.out::println);
+        Map<String, String> result = new HashMap<>();
+        System.out.println("=================================");
+        List<ServiceInstance> instances = discoveryClient.getInstances("nitere-cloud-order");
+        instances.forEach(instance -> {
+            result.put("serviceId",instance.getServiceId());
+            result.put("host",instance.getHost());
+            result.put("port",String.valueOf(instance.getPort()));
+            result.put("uri",instance.getUri().toString());
+        });
+       return ResultData.success(result);
+    }
 }
