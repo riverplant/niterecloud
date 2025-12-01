@@ -1,9 +1,7 @@
 package com.nitere.cloud.order.web.controller;
 
 import com.nitere.cloud.commons.domain.ResultData;
-import com.nitere.cloud.order.domain.dto.BrandDto;
-import io.swagger.v3.oas.annotations.Operation;
-import lombok.AllArgsConstructor;
+import com.nitere.cloud.commons.domain.dto.BrandDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -12,7 +10,6 @@ import org.springframework.cloud.client.discovery.DiscoveryClient;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
 

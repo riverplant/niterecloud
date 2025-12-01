@@ -59,8 +59,8 @@ public class BrandController {
 
     @GetMapping(value = "/list")
     @Operation(summary = "分頁查詢", description = "分頁查詢所有品牌")
-    public ResultData<Page<BrandDto>> getList(@RequestParam(defaultValue = "1") int page,
-                                              @RequestParam(defaultValue = "10") int size) {
+    public ResultData<Page<BrandDto>> getList(@RequestParam("page") int page,
+                                              @RequestParam("size") int size) {
         return ResultData.success(brandService.pageBrands(page, size));
     }
 

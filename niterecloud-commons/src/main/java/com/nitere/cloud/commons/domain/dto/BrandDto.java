@@ -1,4 +1,4 @@
-package com.nitere.cloud.order.domain.dto;
+package com.nitere.cloud.commons.domain.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

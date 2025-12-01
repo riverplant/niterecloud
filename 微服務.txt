@@ -63,10 +63,6 @@ docker run -d --name consul-dev -p 8500:8500 -p 8600:8600/udp -v consul-data:/co
 
 使用DiscoveryClient來獲得Consul上所有的注冊服務實例
 
-
-
-
-
 --------------------------------------------微服務之間的調用--------------------------------------------------------------------------------------------
 
 loadBalancer： 負載均衡
@@ -81,16 +77,10 @@ public class RestTemplateConfig {
     }
 }
 
-
-
-
-
-
-
-
-
-
 OpenFeign： 服務調用
+
+
+
 
 
 
