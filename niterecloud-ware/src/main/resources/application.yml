@@ -3,7 +3,9 @@ server:
 
 spring:
   application:
-    name: order
+    name: nitere-cloud-ware
+  profiles:
+    active: dev #多環節配置加載内容dev/prod, 不寫就是默認default
 
   datasource:
     url: jdbc:postgresql://localhost:5432/niterecloud-ware

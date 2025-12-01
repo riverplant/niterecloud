@@ -1,6 +1,6 @@
 spring:
   application:
-    name: nitere-cloud-order
+    name: nitere-cloud-ware
 
   cloud:
     consul:
@@ -11,4 +11,3 @@ spring:
       config:
         profile-separator: '-' #default value is ",", we update ‘_’
         format: YAML
-
