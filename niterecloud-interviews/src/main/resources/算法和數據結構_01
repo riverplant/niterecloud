@@ -64,3 +64,23 @@
 
         return -1;
     }
+
+
+ 4. 快速排序
+ int[] arr = {5, 3, 8, 4, 2, 7, 1, 6};
+ int left = 0; //下標
+ int right = 7;   //下標
+
+int i = left = 0;
+ pivot = arr[right] = 6 // 最右邊的元素
+
+ //將所有小於6的都排在左邊，大於6的都排在右邊
+ for(int j=left; j< right -1; j++){
+      if(arr[j] < pivot){
+          swap(arr, i, j);
+          i++;
+      }
+      }
+ }
+ }
+
