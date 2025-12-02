@@ -63,6 +63,128 @@ docker run -d --name consul-dev -p 8500:8500 -p 8600:8600/udp -v consul-data:/co
 
 使用DiscoveryClient來獲得Consul上所有的注冊服務實例
 
+spring:
+  application:
+    name: nitere-cloud-order
+
+  cloud:
+    consul:
+      host: localhost
+      port: 8500
+      discovery:
+        service-name: ${spring.application.name}
+      config:
+        profile-separator: '-' #default value is ",", we update ‘_’
+        format: YAML
+
+    openfeign:
+      client:
+        config:
+          #default: 為全局配置
+          #nitere-cloud-production : 為指定服務進行配置
+          default:
+            #連接超時時間
+            connectTimeout: 3000
+            #讀取超時時間
+            readTimeout: 3000
+
+
+重試機制: 默認關閉
+        通過新增配置類feignConfig
+
+
+httpClient修改: 默認使用HttpURLConnection,  使用Apache HttpClient5來替換
+        <!-- httpclient5 -->
+        <dependency>
+            <groupId>org.apache.httpcomponents.client5</groupId>
+            <artifactId>httpclient5</artifactId>
+            <version>5.4.4</version>
+        </dependency>
+
+        <dependency>
+            <groupId>io.github.openfeign</groupId>
+            <artifactId>feign-hc5</artifactId>
+            <version>13.1</version>
+        </dependency>
+
+
+spring:
+  application:
+    name: nitere-cloud-order
+
+  cloud:
+    consul:
+      host: localhost
+      port: 8500
+      discovery:
+        service-name: ${spring.application.name}
+      config:
+        profile-separator: '-' #default value is ",", we update ‘_’
+        format: YAML
+
+    openfeign:
+      client:
+        config:
+          #default: 為全局配置
+          #nitere-cloud-production : 為指定服務進行配置
+          default:
+            #連接超時時間
+            connectTimeout: 4000
+            #讀取超時時間
+            readTimeout: 4000
+
+      httpclient:
+        hc5:
+          enabled: true
+
+壓縮: GZIP
+spring:
+  application:
+    name: nitere-cloud-order
+
+  cloud:
+    consul:
+      host: localhost
+      port: 8500
+      discovery:
+        service-name: ${spring.application.name}
+      config:
+        profile-separator: '-' #default value is ",", we update ‘_’
+        format: YAML
+
+    openfeign:
+      client:
+        config:
+          #default: 為全局配置
+          #nitere-cloud-production : 為指定服務進行配置
+          default:
+            #連接超時時間
+            connectTimeout: 4000
+            #讀取超時時間
+            readTimeout: 4000
+
+      httpclient:
+        hc5:
+          enabled: true
+      compression:
+        request:
+          enabled: true
+          min-request-size: 2048 # 最小出發壓縮的大小
+          mime-types: text/xml,application/xml,application/json #觸發法索數據類型
+        response:
+          enabled: true
+
+日志打印功能: 通過調整日志級別
+
+1. 開啓日志
+    @Bean
+    Logger.Level feignLoggerlevel() {
+        return Logger.Level.FULL;
+    }
+
+2.yml文件開啓日志客戶端
+
+
 --------------------------------------------微服務之間的調用--------------------------------------------------------------------------------------------
 
 loadBalancer： 負載均衡
@@ -78,6 +200,8 @@ public class RestTemplateConfig {
 }
 
 OpenFeign： 服務調用
+
+ 1. 超時控制: yml 文件中開啓配置: connectTimeout     readTimeout
 
 
 

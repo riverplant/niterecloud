@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 @RestController
 @RequestMapping("/brand")
@@ -62,6 +63,23 @@ public class BrandController {
     public ResultData<Page<BrandDto>> getList(@RequestParam("page") int page,
                                               @RequestParam("size") int size) {
         return ResultData.success(brandService.pageBrands(page, size));
+    }
+
+
+    @GetMapping(value = "/retry")
+    @Operation(summary = "測試feign的retry", description = "測試feign的retry")
+    public ResultData<BrandDto> retry() {
+        try {
+            // 休眠 60 秒
+            TimeUnit.SECONDS.sleep(10);
+        } catch (InterruptedException e) {
+            // 恢復中斷狀態
+            Thread.currentThread().interrupt();
+            throw new RuntimeException("Thread 被中斷", e);
+        }
+
+        // 模擬錯誤，讓 Feign 觸發 retry
+        throw new RuntimeException("模擬服務端錯誤，用於測試 Feign Retry");
     }
 
     @GetMapping(value = "/consul/get/info")

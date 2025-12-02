@@ -49,4 +49,10 @@ public class OrderControllerFeign {
                                               @RequestParam("size") int size) {
         return productionFeignApi.getList(page, size);
     }
+
+    @GetMapping(value = "/brand/retry")
+    public ResultData<BrandDto> retry() {
+        return productionFeignApi.retry();
+
+    }
 }

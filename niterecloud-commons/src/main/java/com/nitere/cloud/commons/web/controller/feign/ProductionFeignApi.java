@@ -32,4 +32,8 @@ public interface ProductionFeignApi {
     @Operation(summary = "分頁查詢", description = "分頁查詢所有品牌")
     ResultData<Page<BrandDto>> getList(@RequestParam("page") Integer page,
                                        @RequestParam("size") Integer size);
+
+
+    @GetMapping(value = "/brand/retry")
+    ResultData<BrandDto> retry() ;
 }
