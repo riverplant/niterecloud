@@ -55,4 +55,9 @@ public class OrderControllerFeign {
         return productionFeignApi.retry();
 
     }
+
+    @GetMapping(value = "/production/circuit/{id}")
+    public String myCircuit(@PathVariable("id") Long id) {
+        return productionFeignApi.myCircuit(id);
+    }
 }

@@ -4,13 +4,24 @@ server:
 spring:
   application:
     name: nitere-cloud-production
+
   profiles:
-    active: dev #多環節配置加載内容dev/prod, 不寫就是默認default
+    active: dev
+
+  config:
+    import: "optional:consul:localhost:8500"
+
+  cloud:
+    consul:
+      host: localhost
+      port: 8500
+      discovery:
+        service-name: ${spring.application.name}
 
   datasource:
     url: jdbc:postgresql://localhost:5432/niterecloud-product
     username: postgres
-    password: Jie@140305
+    password: Jie@140305        # 建議實際專案用環境變數
     driver-class-name: org.postgresql.Driver
     hikari:
       minimum-idle: 5
@@ -43,25 +54,15 @@ spring:
     username: guest
     password: guest
     connection-timeout: 15000
-    # 開啓發送段確認
-    publisher-confirm-type: correlated  #  新寫法，必須開啟這個
-    publisher-returns: true             # 若你也想處理 ReturnCallback
+    publisher-confirm-type: correlated
+    publisher-returns: true
     template:
-      mandatory: true                    #  配合 return callback 的必要設置
+      mandatory: true
     listener:
       simple:
-        acknowledge-mode: manual    #允許你在消費者中手動 channel.basicAck() 或 basicNack()
+        acknowledge-mode: manual
         concurrency: 1
         max-concurrency: 5
-
-
-
-feign:
-  client:
-    config:
-      default:
-        connectTimeout: 5000
-        readTimeout: 5000
 
 logging:
   level:

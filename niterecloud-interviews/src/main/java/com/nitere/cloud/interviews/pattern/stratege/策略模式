@@ -1,0 +1,6 @@
+封裝變化
+
+Strategy: 策略類，定義所有支持的算法的公共接口
+
+
+Context:用一個ConcreteStrategy來配置，維護一個對Strategy對象的引用

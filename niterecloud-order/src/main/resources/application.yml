@@ -1,70 +1,63 @@
-server:
-  port: 9000
-
 spring:
   application:
     name: nitere-cloud-order
-  profiles:
-    active: dev #多環節配置加載内容dev/prod, 不寫就是默認default
 
-  datasource:
-    url: jdbc:postgresql://localhost:5432/niterecloud-order
-    username: postgres
-    password: Jie@140305
-    driver-class-name: org.postgresql.Driver
-    hikari:
-      minimum-idle: 5
-      maximum-pool-size: 20
-      auto-commit: true
-      idle-timeout: 60000
-      pool-name: DateSourceHikariCP
-      max-lifetime: 1800000
-      connection-timeout: 30000
-      connection-test-query: SELECT 1
+  # 如果你真的要從 Consul K/V 讀遠端配置，可以這樣：
+  # config:
+  #   import: optional:consul:localhost:8500
+  config:
+    import: "optional:consul:localhost:8500"
 
-  jpa:
-    hibernate:
-      ddl-auto: update
-    show-sql: true
-    properties:
-      hibernate:
-        dialect: org.hibernate.dialect.PostgreSQLDialect
-        format_sql: true
+  cloud:
+    consul:
+      host: localhost
+      port: 8500
+      discovery:
+        service-name: ${spring.application.name}
+      config:
+        profile-separator: '-'
+        format: YAML
 
-  servlet:
-    multipart:
-      max-file-size: 50MB
-      max-request-size: 50MB
+    openfeign:
+      client:
+        config:
+          default:
+            connectTimeout: 4000
+            readTimeout: 4000
 
+      httpclient:
+        hc5:
+          enabled: true
+      compression:
+        request:
+          enabled: true
+          min-request-size: 2048
+          mime-types: text/xml,application/xml,application/json
+        response:
+          enabled: true
+      circuitbreaker:
+        enabled: true
+        group:
+          enabled: true
 
-  rabbitmq:
-    host: localhost
-    port: 5672
-    virtual-host: /
-    username: guest
-    password: guest
-    connection-timeout: 15000
-    # 開啓發送段確認
-    publisher-confirm-type: correlated  #  新寫法，必須開啟這個
-    publisher-returns: true             # 若你也想處理 ReturnCallback
-    template:
-      mandatory: true                    #  配合 return callback 的必要設置
-    listener:
-      simple:
-        acknowledge-mode: manual    #允許你在消費者中手動 channel.basicAck() 或 basicNack()
-        concurrency: 1
-        max-concurrency: 5
-
-
-
-feign:
-  client:
-    config:
-      default:
-        connectTimeout: 5000
-        readTimeout: 5000
+# Resilience4j 詳細策略（可選，但推薦）
+resilience4j:
+  circuitbreaker:
+    instances:
+      nitere-cloud-production:
+        slidingWindowSize: 20
+        minimumNumberOfCalls: 10
+        failureRateThreshold: 50
+        waitDurationInOpenState: 10s
+        permittedNumberOfCallsInHalfOpenState: 3
+  timelimiter:
+    instances:
+      nitere-cloud-production:
+        timeoutDuration: 3s
 
 logging:
   level:
-    root: info
-    org.springframework.web: debug
+    com.nitere.cloud.commons.web.controller.feign.ProductionFeignApi: debug
+    org.springframework.cloud.openfeign: DEBUG
+    feign: DEBUG
+    org.apache.hc.client5.http: DEBUG

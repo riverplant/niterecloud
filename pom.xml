@@ -205,11 +205,6 @@
             <artifactId>spring-cloud-starter-consul-config</artifactId>
         </dependency>
 
-        <dependency>
-            <groupId>org.springframework.cloud</groupId>
-            <artifactId>spring-cloud-starter-bootstrap</artifactId>
-        </dependency>
-
         <!-- loadbalancer, 應該放在消費者端 -->
         <dependency>
             <groupId>org.springframework.cloud</groupId>
@@ -246,6 +241,20 @@
             <artifactId>feign-hc5</artifactId>
             <version>13.1</version>
         </dependency>
+
+
+        <!--resilience4j-circuitbreaker -->
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-starter-circuitbreaker-resilience4j</artifactId>
+            <!-- 注意：這裡不要寫 <version> -->
+        </dependency>
+        <!--斷路器保護需要AOP實現 -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-aop</artifactId>
+        </dependency>
+
 
     </dependencies>
 

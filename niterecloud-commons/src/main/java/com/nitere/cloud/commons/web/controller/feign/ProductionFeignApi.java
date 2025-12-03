@@ -36,4 +36,7 @@ public interface ProductionFeignApi {
 
     @GetMapping(value = "/brand/retry")
     ResultData<BrandDto> retry() ;
+
+    @GetMapping(value = "/production/circuit/{id}")
+    String myCircuit(@PathVariable("id") Long id);
 }

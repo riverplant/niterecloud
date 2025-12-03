@@ -184,7 +184,6 @@ spring:
 
 2.yml文件開啓日志客戶端
 
-
 --------------------------------------------微服務之間的調用--------------------------------------------------------------------------------------------
 
 loadBalancer： 負載均衡
@@ -204,6 +203,57 @@ OpenFeign： 服務調用
  1. 超時控制: yml 文件中開啓配置: connectTimeout     readTimeout
 
 
+----------------------------------------------------Resilience4j------------------------------------------------------------------------------
+
+Circuit Breaker：服務熔斷和降級  Resilience4j: CLOSED | OPEN | HALF_OPEN
+
+
+failure-rate-threshold:  以百分比配置失敗率峰值
+
+sliding-window-type: 滑動窗口期類型 COUNT_BASE(基於次數) | TIME_BASED(基於時間)
+
+sliding-window-size：
+       COUNT_BASED: 10次調用中有50%失敗，打開熔斷器
+       TIME_BASED： 在sliding-window-size秒内，100% show-call-rate-threshold的請求超過
+       slow-call-duration-threshold, 打開熔斷器
+
+如果配置為TIME_BASED:
+show-call-rate-threshold: 以百分比方式配置，斷路器把調用時間大於 slow-call-duration-threshold的調用視爲慢調用
+                           儅慢調用大於等於峰值，斷路器開啓，并且進入服務降級
+
+slow-call-duration-threshold：配置調用時間峰值，高於該峰值的視爲慢調用. 例如3秒
+
+
+permitted-number-of-calls-in-half-open-state: 斷路器在HALF_OPEN狀態下進行的調用次數，如果慢調用依然高於峰值，再次打開
+
+minimum-number-of-calls: 滑動窗口樣本數，低於樣本，斷路器配置無效
+
+wait-duration-in-open-state: 從OPEN到HALF_OPEN狀態等待的時間
+
+*****************************************************************************
+案例：
+   6次訪問中，如果失敗率達到50%， CircuitBreaker 將進入OPEN
+   5秒之後，CircuitBreaker從OPEN->HALF_OPEN， 進入服務降級fallback
+   如果依然是異常，CircuitBreaker 將進入OPEN，否則進入CLOSED
+
+********************************************************************************
+
+
+
+
+   1. 服務熔斷:  close 可以正常使用，  open 拒絕訪問
+
+   2.服務降級:
+
+   3.服務限流:
+
+   4.服務限時:
+
+   5.服務預熱:
+
+   6.接近實時的監控:
+
+   7.兜底的處理動作:
 
 
 
@@ -212,9 +262,15 @@ OpenFeign： 服務調用
 
 
 
-----------------------------------------------------------------------------------------------------------------------------------
 
-Circuit Breaker：服務熔斷和降級
+
+
+
+
+
+
+
+
 
 Micrometer Tracing: 服務鏈路追蹤
 
