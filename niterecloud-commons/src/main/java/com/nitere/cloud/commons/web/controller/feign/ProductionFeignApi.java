@@ -39,4 +39,7 @@ public interface ProductionFeignApi {
 
     @GetMapping(value = "/production/circuit/{id}")
     String myCircuit(@PathVariable("id") Long id);
+
+    @GetMapping(value = "/production/bulkhead/{id}")
+    public String bulkhead(@PathVariable("id") Long id);
 }

@@ -14,7 +14,8 @@ public class FeignConfig {
     @Bean
     public Retryer myRetryer() {
         // 最大請求次數為3(1+2), 初始間隔時間為100ms, 重試間隔時間為1s
-        return new Retryer.Default(100, TimeUnit.SECONDS.toMillis(1), 3);
+        //return new Retryer.Default(100, TimeUnit.SECONDS.toMillis(1), 3);
+        return Retryer.NEVER_RETRY;
     }
 
     @Bean

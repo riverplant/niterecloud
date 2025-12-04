@@ -1,0 +1,95 @@
+1. CountDownLatch 減少計數鎖存器
+
+  等一批任務都完成
+
+
+建構：new CountDownLatch(int count)
+
+內部有一個計數器，初始值是 count。
+
+多個線程可以呼叫 countDown()：計數器 -1。
+
+一個或多個線程呼叫 await()：
+
+如果計數器 > 0：阻塞等待
+
+如果計數器 == 0：立即返回
+
+特性：一次性的，計數器到 0 後不能重設，只能新建一個。
+
+如果是 Spring Boot，這樣的啟動管理器可以放在 @PostConstruct 或 ApplicationRunner 裡使用。
+
+
+@Configuration
+public class MallStartupConfig {
+
+    @Bean
+    public ApplicationStartupManager applicationStartupManager(List<StartupTask> tasks) {
+        // Spring 會把所有 @Component 實現 StartupTask 的 bean 自動組成一個 List
+        return new ApplicationStartupManager(tasks);
+    }
+
+    @Bean
+    public ApplicationRunner startupRunner(ApplicationStartupManager startupManager) {
+        return args -> {
+            startupManager.startAll();  // 提交所有任務
+            try {
+                startupManager.awaitStartup(30, TimeUnit.SECONDS); // 最多等 30 秒
+                // 如果都 OK，服務就正常啟動完，可以註冊到 Nacos / Gateway 接流量
+            } catch (TimeoutException e) {
+                // 這裡你可以選擇：打一個嚴重日誌然後直接退出
+                // 例如:
+                System.err.println("[Startup] 子系統啟動超時，直接關閉應用");
+                System.exit(1);
+            }
+        };
+    }
+}
+這裡的 ApplicationRunner 會在 Spring Boot 啟動快結束時執行：
+
+先 startAll() 開始 DB/Redis/MQ 檢查；
+
+用 CountDownLatch 的 await() 等所有任務完成；
+
+超時或失敗時你可以直接 System.exit(1) 或丟 RuntimeException 讓 Spring Boot 啟動 fail。
+
+-------------------------------------------------------------------------------------------------------------
+2. CyclicBarrier:  循環柵欄
+
+你和 3 個朋友要一起出發自駕遊，每個人從不同地方出發，
+約好都先開到 高速公路入口集合點，大家到齊之後再一起上高速。
+
+集合點 = 柵欄（Barrier）
+
+每個人 = 一個線程
+
+每個人到集合點後先等著：await()
+
+當「約好的 4 個人都到了」→ 柵欄打開 → 所有人同時繼續往下走
+
+
+實際場景（可以套到谷粒商城）
+
+假設你在做一個離線批處理（比如晚上的報表任務）：
+
+有幾百萬條訂單記錄，需要用 4 個 worker 並行處理。
+
+資料被切成多個「批次」（batch）：Batch 1、2、3…
+
+每一批處理結束後，要算一次統計（總筆數 / 金額），再進入下一批。
+
+-----------------------------------------------------------------------------------------------------------
+
+3.Semaphore: 信號量/信號燈  限制外部 REST API 的併發請求數
+
+Semaphore 裡面有一個「許可證數量（permits）」；
+線程 acquire() 表示「我要一張票」，
+如果有票，就拿到並繼續執行；
+如果沒有票，就阻塞等待。
+線程 release() 表示「我用完了，把票還回去」。
+
+非常適合用來做：
+
+併發限流（同時最多 10 個請求打到某 API）
+
+資源池（有限的連線、檔案、硬體資源）

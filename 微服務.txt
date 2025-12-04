@@ -237,10 +237,6 @@ wait-duration-in-open-state: 從OPEN到HALF_OPEN狀態等待的時間
    如果依然是異常，CircuitBreaker 將進入OPEN，否則進入CLOSED
 
 ********************************************************************************
-
-
-
-
    1. 服務熔斷:  close 可以正常使用，  open 拒絕訪問
 
    2.服務降級:
@@ -254,6 +250,21 @@ wait-duration-in-open-state: 從OPEN到HALF_OPEN狀態等待的時間
    6.接近實時的監控:
 
    7.兜底的處理動作:
+
+ bulkhead: 【艙壁隔離機制: 限制并發執行的數量！！！！！！！！！！！！！！！！！！！！！！！！！！！！】
+
+    1. SemaphoreBulkhead: 信號量
+         <!-- resilience4j-bulkhead 限流-->
+                <dependency>
+                    <groupId>io.github.resilience4j</groupId>
+                    <artifactId>resilience4j-bulkhead</artifactId>
+                </dependency>
+         yml:
+             maxConcurrentCalls: 艙壁容許的最大并發執行量
+             maxWaitDuration:    嘗試進入飽和艙壁時，阻塞綫程等待的最長時間
+
+
+    2. FixedThreadPoolBulkhead: 有界隊列和固定大小綫程池
 
 
 
