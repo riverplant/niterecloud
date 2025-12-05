@@ -32,24 +32,12 @@ public class ProductionCircuitController {
         return "Hello, circuit! inputId:" + id + "\t" + UUID.randomUUID();
     }
 
-    // Resilience4j bulkhead
-    @GetMapping(value = "/production/bulkhead/{id}")
-    public String bulkhead(@PathVariable("id") Long id) {
+    // Resilience4j ratelimit
+    @GetMapping(value = "/production/ratelimit/{id}")
+    public String myRatelimit(@PathVariable("id") Long id) {
 
-        if (id == -4) throw new RuntimeException("------circuit id 不能為負數");
-
-        if (id == 9999) {
-            try {
-                TimeUnit.SECONDS.sleep(5);
-            } catch (InterruptedException e) {
-                // 恢復中斷狀態（正確處理 InterruptedException）
-                Thread.currentThread().interrupt();
-                // 用 logging 記錄錯誤
-                log.warn("Thread was interrupted while simulating delay", e);
-            }
-
-        }
-
-        return "Hello, bulkhead! inputId:" + id + "\t" + UUID.randomUUID();
+        return "Hello, ratelimit! inputId:" + id + "\t" + UUID.randomUUID();
     }
+
+
 }

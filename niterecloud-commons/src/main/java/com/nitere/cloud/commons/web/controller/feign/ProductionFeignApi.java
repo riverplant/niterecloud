@@ -35,11 +35,14 @@ public interface ProductionFeignApi {
 
 
     @GetMapping(value = "/brand/retry")
-    ResultData<BrandDto> retry() ;
+    ResultData<BrandDto> retry();
 
     @GetMapping(value = "/production/circuit/{id}")
     String myCircuit(@PathVariable("id") Long id);
 
     @GetMapping(value = "/production/bulkhead/{id}")
-    public String bulkhead(@PathVariable("id") Long id);
+    String bulkhead(@PathVariable("id") Long id);
+
+    @GetMapping(value = "/production/ratelimit/{id}")
+    String myRatelimit(@PathVariable("id") Long id);
 }

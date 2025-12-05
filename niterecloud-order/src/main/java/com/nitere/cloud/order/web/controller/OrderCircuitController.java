@@ -3,6 +3,7 @@ package com.nitere.cloud.order.web.controller;
 import com.nitere.cloud.commons.web.controller.feign.ProductionFeignApi;
 import io.github.resilience4j.bulkhead.annotation.Bulkhead;
 import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
+import io.github.resilience4j.ratelimiter.annotation.RateLimiter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -63,6 +64,18 @@ public class OrderCircuitController {
     public CompletableFuture<String> myBulkheadPoolFallback(Long id, Throwable t) {
         log.error("[myBulkheadPoolFallback] id={}, error={}", id, t.toString());
         return CompletableFuture.supplyAsync(() -> "myBulkheadPoolFallback, 艙壁超出最大訪問呢數量限制, 系統繁忙，請稍後再試-------");
+    }
+
+
+    @GetMapping(value = "/production/ratelimit/{id}")
+    @RateLimiter(name = "pro-ratelimiter", fallbackMethod = "myRatelimitFallback")
+    public String myRatelimit(@PathVariable("id") Long id) {
+        return productionFeignApi.myRatelimit(id);
+    }
+
+    public String myRatelimitFallback(Long id, Throwable t) {
+        log.error("[myRatelimitFallback] id={}, error={}", id, t.toString());
+        return "myBulkheadFallback, 你被限流了，禁止訪問-------";
     }
 
 }

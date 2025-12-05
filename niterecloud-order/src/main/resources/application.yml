@@ -71,23 +71,25 @@ spring:
 
 # Resilience4j 詳細策略（可選，但推薦）
 resilience4j:
+  ######斷路器，進行服務熔斷和降級
   circuitbreaker:
     instances:
       nitere-cloud-production:
         slidingWindowType: COUNT_BASED # 滑動窗口類型
-        slidingWindowSize: 6 #滑動窗口大小配置，COUNT_BASED表示6個請求，TIME_BASED表示6秒
-        minimumNumberOfCalls: 6  #最小樣本
+        slidingWindowSize: 20 #滑動窗口大小配置，COUNT_BASED表示6個請求，TIME_BASED表示6秒
+        minimumNumberOfCalls: 20  #最小樣本
         failureRateThreshold: 50  #超過請求失敗百分比，CircuitBreaker open
         automaticTransitionFromOpenToHalfOpenEnabled: true #是否自動從開啓狀態過度到半開狀態，默認爲true
         waitDurationInOpenState: 5s
-        permittedNumberOfCallsInHalfOpenState: 3
+        permittedNumberOfCallsInHalfOpenState: 5
         recordExceptions:
           - java.lang.Exception
+  ######艙壁， 進行限流
   bulkhead:
     instances:
       prod-semaphore:
-        maxConcurrentCalls: 50 #隔離容許并發綫程執行的最大綫程數
-        maxWaitDuration: 3s #阻塞綫程的最長等待時間
+        maxConcurrentCalls: 30 #隔離容許并發綫程執行的最大綫程數
+        maxWaitDuration: 50ms #阻塞綫程的最長等待時間
   #resilience4j.thread-pool-bulkhead
   thread-pool-bulkhead:
     instances:
@@ -95,6 +97,15 @@ resilience4j:
         max-thread-pool-size: 1
         core-thread-pool-size: 1
         queue-capacity: 1
+
+  ####resilience4j  ratelimiter限流
+  ratelimiter:
+    instances:
+      pro-ratelimiter:
+        limitForPeriod: 50 #再一次刷新周期内，允許執行的最大請求數
+        limitRefreshPeriod: 1s #限流器每隔limitRefreshPeriod刷新一次，將允許處理的最大請求數重置為limitForPeriod
+        timeout-duration: 0 #綫程等待權限的默認等待時間
+
 
   timelimiter:
     instances:

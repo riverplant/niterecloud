@@ -241,7 +241,22 @@ wait-duration-in-open-state: 從OPEN到HALF_OPEN狀態等待的時間
 
    2.服務降級:
 
-   3.服務限流:
+   3.服務限流:RateLimiter
+
+     【限流算法】：
+        漏斗算法(Leaky Bucket): 缺少效率
+
+        令牌桶算法(Token Bucket) 【重點!!!!】:
+
+        滾動時間窗口(tumbling time window) : 臨界時間點如果收到大量請求，容易引發系統奔潰
+
+         滾動時間窗口(sliding time window)
+
+       <!-- resilience4j-ratelimiter 限流算法-->
+        <dependency>
+            <groupId>io.github.resilience4j</groupId>
+            <artifactId>resilience4j-ratelimiter</artifactId>
+        </dependency>
 
    4.服務限時:
 
@@ -271,18 +286,59 @@ wait-duration-in-open-state: 從OPEN到HALF_OPEN狀態等待的時間
 
 
 
+***********************************************************************************************
+RateLimiter（限流）
 
+关注：单位时间内允许多少请求通过
 
+目的：防止突发流量把你或下游打爆
 
+典型场景：
 
+你要给某个下游 API 做“每秒最多 N 次调用”
 
+你有明确的 SLA/配额（比如第三方接口）
 
+Bulkhead（舱壁/并发隔离）
 
+关注：同一时刻最多允许多少并发请求
 
+目的：防止线程/连接被占满，把整个服务拖死
 
+典型场景：
 
+下游变慢导致请求堆积
 
+你想限制某类调用最多占用多少资源
 
+*********************************************************************************************************
+
+调参优先级（nitere-cloud-order 实战顺序）
+
+先定 Feign 超时（避免无限慢）
+
+再定 Bulkhead 并发上限（防线程/资源被占满）
+
+最后定 RateLimiter 速率（压尖峰、保护下游）
+
+再微调 CircuitBreaker 的窗口/阈值
+
+一个很好用的小经验值
+
+在 nitere-cloud-order 里你可以用这个启发式：
+
+maxConcurrentCalls
+≈ 你愿意让这个下游调用最多占你服务多少资源
+通常 20~50 是个安全区间（内部服务）
+
+limitForPeriod
+≈ maxConcurrentCalls * (1000ms / 下游平均耗时ms)
+例如下游平均 100ms：
+
+并发 30 → 粗略可承受 300 req/s
+你可以先保守配 50~100/s，再看监控放大。
+
+**********************************************************************************************************
 
 
 Micrometer Tracing: 服務鏈路追蹤
