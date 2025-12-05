@@ -93,3 +93,109 @@ Semaphore 裡面有一個「許可證數量（permits）」；
 併發限流（同時最多 10 個請求打到某 API）
 
 資源池（有限的連線、檔案、硬體資源）
+
+
+-------------------------------------案例----------------------------------------------------------------
+在一個「聚合/BFF/Account」服務中，同時並發調用 3 個下游微服務，最後合併結果回給前端。
+member-service：我的會員信息
+
+order-service：我的訂單列表
+
+coupon/points-service：我的優惠券/積分
+
+你要做一個聚合接口：
+
+GET /account/api/dashboard
+
+核心思路
+
+進入聚合接口
+
+用 CompletableFuture.supplyAsync(...) 同時發起 3 個調用
+
+設置超時與降級
+
+allOf(...) 等三個都結束
+
+合併成一個 DTO 返回
+
+import java.util.List;
+import java.util.concurrent.*;
+import static java.util.concurrent.TimeUnit.MILLISECONDS;
+
+public class AccountAggregationService {
+
+    private final MemberClient memberClient;
+    private final OrderClient orderClient;
+    private final PointsClient pointsClient;
+    private final Executor ioExecutor;
+
+    public AccountAggregationService(MemberClient memberClient,
+                                     OrderClient orderClient,
+                                     PointsClient pointsClient,
+                                     Executor ioExecutor) {
+        this.memberClient = memberClient;
+        this.orderClient = orderClient;
+        this.pointsClient = pointsClient;
+        this.ioExecutor = ioExecutor;
+    }
+
+    public AccountDashboardDto dashboard(String bearerToken) {
+
+        CompletableFuture<MemberDto> memberFuture =
+                CompletableFuture.supplyAsync(() -> memberClient.me(bearerToken), ioExecutor)
+                        .orTimeout(800, MILLISECONDS)
+                        .exceptionally(ex -> fallbackMember(ex));
+
+        CompletableFuture<List<OrderDto>> ordersFuture =
+                CompletableFuture.supplyAsync(() -> orderClient.myOrders(bearerToken), ioExecutor)
+                        .orTimeout(1200, MILLISECONDS)
+                        .exceptionally(ex -> List.of());
+
+        CompletableFuture<PointsDto> pointsFuture =
+                CompletableFuture.supplyAsync(() -> pointsClient.myPoints(bearerToken), ioExecutor)
+                        .orTimeout(800, MILLISECONDS)
+                        .exceptionally(ex -> new PointsDto(0));
+
+        // 等三個都完成（成功/失敗都算完成，因為我們 already exceptionally）
+        CompletableFuture.allOf(memberFuture, ordersFuture, pointsFuture).join();
+
+        return new AccountDashboardDto(
+                memberFuture.join(),
+                ordersFuture.join(),
+                pointsFuture.join()
+        );
+    }
+
+    private MemberDto fallbackMember(Throwable ex) {
+        // 真實項目可打 log + 上報 metric
+        return new MemberDto(null, "UNKNOWN");
+    }
+}
+
+
+@Configuration
+public class AsyncPoolConfig {
+
+    @Bean("ioExecutor")
+    public Executor ioExecutor() {
+        ThreadPoolTaskExecutor exec = new ThreadPoolTaskExecutor();
+        exec.setCorePoolSize(20);
+        exec.setMaxPoolSize(100);
+        exec.setQueueCapacity(500);
+        exec.setThreadNamePrefix("io-agg-");
+        exec.initialize();
+        return exec;
+    }
+}
+
+-------------------------------綫程池ThreadPool--------------------------
+最大綫程數包含了core 綫程數， 所以能接受的最大綫程數是 maxPool + queue
+
+1.  請求來了先進入corePool
+
+2. corePool滿了會進入queue
+
+3. queuer如果也滿了進入maximumPool
+
+4. 再來的請求將使用拒絕策略拒絕

@@ -65,8 +65,9 @@ spring:
           enabled: true
       circuitbreaker:
         enabled: true
-        group:
-          enabled: true
+        #使用綫程池的方式，這裏應該關閉
+ #       group:
+ #         enabled: true
 
 # Resilience4j 詳細策略（可選，但推薦）
 resilience4j:
@@ -84,9 +85,17 @@ resilience4j:
           - java.lang.Exception
   bulkhead:
     instances:
-      nitere-cloud-production:
+      prod-semaphore:
         maxConcurrentCalls: 50 #隔離容許并發綫程執行的最大綫程數
         maxWaitDuration: 3s #阻塞綫程的最長等待時間
+  #resilience4j.thread-pool-bulkhead
+  thread-pool-bulkhead:
+    instances:
+      prod-threadpool:
+        max-thread-pool-size: 1
+        core-thread-pool-size: 1
+        queue-capacity: 1
+
   timelimiter:
     instances:
       nitere-cloud-production:

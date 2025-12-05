@@ -264,7 +264,9 @@ wait-duration-in-open-state: 從OPEN到HALF_OPEN狀態等待的時間
              maxWaitDuration:    嘗試進入飽和艙壁時，阻塞綫程等待的最長時間
 
 
-    2. FixedThreadPoolBulkhead: 有界隊列和固定大小綫程池
+    2. FixedThreadPoolBulkhead: 有界隊列和固定大小綫程池 通過核心綫程數、阻塞隊列
+
+    【ThreadPoolBulkhead只對CompletableFuture方法有效，所以必須創建返回CompletableFuture類型的方法】
 
 
 
