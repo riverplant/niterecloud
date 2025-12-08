@@ -340,7 +340,45 @@ limitForPeriod
 
 **********************************************************************************************************
 
+Micrometer Tracing: 分佈式鏈路系統圖形工具。服務鏈路追蹤
+   Distributed Tracing  分佈式鏈路追蹤 TraceId唯一標識 + Span ID每一次請求,通過 (Parent ID)關聯
+   zipkin  展現 https://zipkin.io
 
-Micrometer Tracing: 服務鏈路追蹤
+   下載: iodocker run -d -p 9411:9411 openzipkin/zipkin
 
+
+       <!-- micrometer-tracing 指標追蹤 2-->
+        <dependency>
+            <groupId>io.micrometer</groupId>
+            <artifactId>micrometer-tracing</artifactId>
+        </dependency>
+
+        <!-- micrometer-tracing-bridge-brave適配zipkin的橋接包 3-->
+        <dependency>
+            <groupId>io.micrometer</groupId>
+            <artifactId>micrometer-tracing-bridge-brave</artifactId>
+        </dependency>
+
+        <!-- micrometer-observation 4-->
+        <dependency>
+            <groupId>io.micrometer</groupId>
+            <artifactId>micrometer-observation</artifactId>
+        </dependency>
+
+        <!-- feign-micrometer 5-->
+        <dependency>
+            <groupId>io.github.openfeign</groupId>
+            <artifactId>feign-micrometer</artifactId>
+        </dependency>
+
+        <!-- zipkin-reporter-brave 6-->
+        <dependency>
+            <groupId>io.zipkin.reporter2</groupId>
+            <artifactId>zipkin-reporter-brave</artifactId>
+            <version>${zipkin-reporter.version}</version>
+        </dependency>
+
+
+
+**********************************************************************************************************
 Gateway: 服務網關

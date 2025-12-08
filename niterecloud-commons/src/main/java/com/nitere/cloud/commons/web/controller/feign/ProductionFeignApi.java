@@ -45,4 +45,8 @@ public interface ProductionFeignApi {
 
     @GetMapping(value = "/production/ratelimit/{id}")
     String myRatelimit(@PathVariable("id") Long id);
+
+    @GetMapping(value = "/production/micrometer/{id}")
+    String myMicrometer(@PathVariable("id") Long id);
+
 }

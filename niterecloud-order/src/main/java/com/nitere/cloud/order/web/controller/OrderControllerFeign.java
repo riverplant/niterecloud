@@ -56,4 +56,9 @@ public class OrderControllerFeign {
 
     }
 
+    @GetMapping(value = "/production/micrometer/{id}")
+    public String myMicrometer(@PathVariable("id") Long id) {
+        return productionFeignApi.myMicrometer(id);
+    }
+
 }
