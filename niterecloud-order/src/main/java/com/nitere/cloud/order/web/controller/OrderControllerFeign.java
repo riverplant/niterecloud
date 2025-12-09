@@ -11,6 +11,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
+import java.util.UUID;
 
 @RestController
 @Slf4j
@@ -59,6 +60,18 @@ public class OrderControllerFeign {
     @GetMapping(value = "/production/micrometer/{id}")
     public String myMicrometer(@PathVariable("id") Long id) {
         return productionFeignApi.myMicrometer(id);
+    }
+
+    @GetMapping(value = "/production/gateway/get/{id}")
+    public ResultData<BrandDto> myGateway(@PathVariable("id") Long id) {
+
+        return productionFeignApi.myGateway(id);
+    }
+
+    @GetMapping(value = "/production/gateway/info")
+    public ResultData<String> myGatewayInfo() {
+
+        return productionFeignApi.myGatewayInfo();
     }
 
 }

@@ -1,0 +1,36 @@
+server:
+  port: 9527
+
+spring:
+  application:
+    name: nitere-cloud-gateway
+
+  profiles:
+    active: dev
+
+  config:
+    import: "optional:consul:localhost:8500"
+
+  cloud:
+    consul:
+      host: localhost
+      port: 8500
+      discovery:
+        service-name: ${spring.application.name}
+
+    gateway:
+      server:
+        webflux:
+          routes:
+            - id: order_production_myGateway_route1
+              uri: http://localhost:9000
+              predicates:
+                - Path=/order/feign/production/gateway/get/**
+
+            - id: order_production_myGatewayInfo_route1
+              uri: http://localhost:9000
+              predicates:
+                - Path=/order/feign/production/gateway/info/**
+
+  main:
+    web-application-type: reactive

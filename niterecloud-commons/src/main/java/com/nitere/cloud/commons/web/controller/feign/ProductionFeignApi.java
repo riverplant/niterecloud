@@ -49,4 +49,10 @@ public interface ProductionFeignApi {
     @GetMapping(value = "/production/micrometer/{id}")
     String myMicrometer(@PathVariable("id") Long id);
 
+    @GetMapping(value = "/production/gateway/get/{id}")
+    ResultData<BrandDto> myGateway(@PathVariable("id") Long id);
+
+    @GetMapping(value = "/production/gateway/info")
+    ResultData<String> myGatewayInfo();
+
 }

@@ -379,6 +379,27 @@ Micrometer Tracing: 分佈式鏈路系統圖形工具。服務鏈路追蹤
         </dependency>
 
 
-
+http://localhost:9411/
 **********************************************************************************************************
-Gateway: 服務網關
+Gateway: 服務網關  本身也是微服務，需要注冊進服務注冊中心
+         客戶端向Spring cloud Gateway發出請求，在Gateway Handler Mapping中找到于請求匹配的路由，發送到Gateway Web Handler, 再通過
+         指定的過濾器來將請求發送到實際的服務，最後返回
+
+         在PRE類型的過濾器中可以做參數校驗、權限校驗、流浪監控、日志輸出、協議轉換
+         在POST的過濾器中可以做響應内容、響應頭的修改，日志輸出，流量監控
+
+   DispatcherHandler: 分發請求
+
+   RoutePredicate-HandlerMapping: 路由查找
+
+   FilteringWebHandler: 過濾器鏈，代理服務處理
+
+ 【3大核心概念】
+
+   Route: 由ID，目標URI，一系列的斷言和過濾器組成，如果斷言為true則匹配該路由
+
+
+   Predicate:
+
+
+   Filter:
