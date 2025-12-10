@@ -400,6 +400,46 @@ Gateway: 服務網關  本身也是微服務，需要注冊進服務注冊中心
 
 
    Predicate:
+       shortcut:
+              predicates:
+                - Path=/production/gateway/get/**
+                - After=2025-12-10T10:01:13.214724800-05:00[America/New_York]
+                - Cookie=username,riverplant   檢查Cookie, 裏面必須包括username, 值必須匹配zzyy
+               curl http://localhost:9527/production/gateway/info --cookie "username=riverplant"
+
+   CIDR: 網絡IP劃分 Classless Inter-Domain Routing縮寫
+
+   192.168.31.1/24 24 的意思是前24位已經被我占用，不能修改(192.168.31) 只有最後八位(.1)可以修改 0~255
+
+--------------------------------------------------------------------------------------------------------------------
+   Filter:SpringMVC中的攔截器Interceptor  pre | post
+       請求鑒權
+
+       異常處理
 
 
-   Filter:
+       記錄接口調用時長統計
+
+        1. Global Filters: gateway出廠默認已有
+
+
+
+        2. 單一内置過濾器: GatewayFilter
+          2.1 請求頭相關(RequestHeader)
+
+          2.2 請求參數(RequestParameter)
+
+
+          2.3 回應頭(ResponseHeader)
+
+          2.4 前綴和路徑相關組
+
+
+          2.5 其它
+
+
+
+        3. ·自定義過濾器
+
+
+

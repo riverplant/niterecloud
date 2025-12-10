@@ -1,12 +1,9 @@
-server:
-  port: 10000
-
 spring:
   application:
     name: nitere-cloud-production
 
   profiles:
-    active: dev
+    active: prod01
 
   config:
     import: "optional:consul:localhost:8500"
@@ -17,6 +14,10 @@ spring:
       port: 8500
       discovery:
         service-name: ${spring.application.name}
+        register: true
+        enabled: true
+        prefer-ip-address: true
+        instance-id: ${spring.application.name}-${server.port}
 
   datasource:
     url: jdbc:postgresql://localhost:5432/niterecloud-product
@@ -67,9 +68,18 @@ spring:
 logging:
   level:
     root: info
-    org.springframework.web: debug
+    #org.springframework.web: debug
 #===========================zipkin==========================
 management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+
+  endpoint:
+    health:
+      probes:
+        enabled: true
   tracing:
     sampling:
       probability: 1.0

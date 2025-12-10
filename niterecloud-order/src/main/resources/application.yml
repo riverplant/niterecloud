@@ -117,7 +117,7 @@ logging:
     com.nitere.cloud.commons.web.controller.feign.ProductionFeignApi: debug
     org.springframework.cloud.openfeign: DEBUG
     feign: DEBUG
-    org.apache.hc.client5.http: DEBUG
+    org.apache.hc.client5.http: INFO
 
 #===========================zipkin==========================
 management:

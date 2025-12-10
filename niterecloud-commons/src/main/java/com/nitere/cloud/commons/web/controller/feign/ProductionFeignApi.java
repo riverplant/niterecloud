@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
 
-@FeignClient("nitere-cloud-production")
+@FeignClient("nitere-cloud-gateway")
 public interface ProductionFeignApi {
 
     @PostMapping(value = "/brand/add")

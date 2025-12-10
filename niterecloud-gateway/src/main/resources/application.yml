@@ -22,15 +22,47 @@ spring:
       server:
         webflux:
           routes:
-            - id: order_production_myGateway_route1
-              uri: http://localhost:9000
+            - id: production_myGateway_route1
+              uri: lb://nitere-cloud-production
+              #uri: http://localhost:9000
               predicates:
-                - Path=/order/feign/production/gateway/get/**
+                - Path=/production/gateway/get/**
+                - After=2025-12-10T10:01:13.214724800-05:00[America/New_York]
+ #               - My=diamond #通過自定義MyRoutePredicateFactory設置該接口只有diamond級別的用戶可以訪問
+                - name: My
+                  args:
+                    userType: diamond
 
-            - id: order_production_myGatewayInfo_route1
-              uri: http://localhost:9000
+            - id: production_myGatewayInfo_route1
+              uri: lb://nitere-cloud-production
               predicates:
-                - Path=/order/feign/production/gateway/info/**
+                - Path=/production/gateway/info/**
+                - After=2025-12-10T09:55:13.214724800-05:00[America/New_York]
+                #- Cookie=username,riverplant #Cookie中包含username=riverplant
+                # curl http://localhost:9527/production/gateway/info --cookie "username=riverplant"
+                #- Header=X-Request-Id, \d+ #請求頭中必須有Header=X-Request-Id屬性，并且值為數字
+                # curl http://localhost:9527/production/gateway/info -H "X-Request-Id:123456"
+                #- Host=**.nitere.com,**.nitere.ca   校驗主機地址,請求頭中必須携帶正確的主機地址
+                #  http://localhost:9527/production/gateway/info -H "Host:www.nitere.ca"
+                #- Query=userid,\d+ 必須要携帶請求參數userid, 并且值爲數字
+                # http://localhost:9527/production/gateway/info?userid=12345
+                - RemoteAddr=10.0.0.168/24 #訪問訪問的IP限制,通過localhost已經無法訪問
+                - Method=GET,POST
+
+            - id: production_myGateway_route3
+              uri: lb://nitere-cloud-production
+              #uri: http://localhost:9000
+              predicates:
+                - Path=/production/gateway/filter/**
+              filters:
+                - AddRequestHeader=X-Request-nitere1,nitere1 #添加請求頭X-Request-nitere1， 值爲nitere1
+                - AddRequestHeader=X-Request-nitere2,nitere2
+                - RemoveRequestHeader=sec-fetch-site    #刪除請求頭sec-fetch-site
+                - SetRequestHeader=sec-fetch-mode, Blue-updatebyriverplant # 將請求頭sec-fetch-mode對應的值修改成updatebyriverplant
+                - AddRequestParameter=customerId,9527001    #添加請求參數customerId
+                - RemoveRequestParameter=customerName   #刪除url請求參數customerName
+                - AddResponseHeader=X-Response-nitere1,nitere1 #添加響應頭X-Response-nitere1， 值爲nitere1
+
 
   main:
     web-application-type: reactive
